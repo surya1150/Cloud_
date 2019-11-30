@@ -6,4 +6,7 @@ resource "aws_instance" "ec2_test" {
   ami = "ami-b374d5a5"
   instance_type = "t2.micro"
 }
-
+resource "aws_eip" "eip"{
+  vpc = "true"
+  instance = aws_instance.ec2_test.id
+}
