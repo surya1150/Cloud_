@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  ExerciseLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: ExerciseLambda
+      Handler: index.handler
+      Role: !GetAtt
+        - ExerciseLambdaRole
+        - Arn
+      Code:
+        S3Bucket: testdxc
+        S3Key: PullCode
+      Runtime: python3.6
+      Timeout: 300
+  ExerciseLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ExerciseLambdaRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: AWSLambdaBasicExecutionRole
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: AmazonS3FullAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 's3:*'
+                Resource:
+                  - 'arn:aws:s3:::testdxc'
+                  - 'arn:aws:s3:::testdxc/*'
+	    - PolicyName: AmazonSSMFullAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'ssm:GetParameters'
+                Resource:
+                  - 'arn:aws:ssm:*:221816535636:parameter/*'
